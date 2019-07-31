@@ -105,11 +105,11 @@ class CodeauroraReleaseParser:
             print(release)
 
     def get_releases_from_file(self):
-        with open(releases_file_name, 'a+') as json_file:
-            try:
+        try:
+            with open(releases_file_name, 'r') as json_file:
                 releases = json.load(json_file)
-            except ValueError:
-                releases = {}
+        except:
+            releases = {}
         return releases
 
     def write_releases_to_file(self, releases):
