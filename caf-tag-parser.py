@@ -29,15 +29,8 @@ class CafRelease:
                 'date': self.date,
                 }
 
-    def as_section(self):
-        lines = []
-        release_dict = self.as_dict()
-        for key in release_dict.keys():
-            lines.append("%s : %s" % (key, release_dict.get(key, "")))
-        return "%s%s%s" % ("\n", "\n".join(lines), "\n")
-
     def __str__(self):
-        return self.as_section()
+        return "\n".join(["%s %s" % (key, value) for key, value in self.as_dict().items()])
 
 
 class CodeauroraReleaseParser:
