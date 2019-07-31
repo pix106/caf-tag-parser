@@ -88,7 +88,7 @@ class CodeauroraReleaseParser:
             if soc or android_version:
                 if (soc and android_version and release.soc == soc and release.android_version == android_version) \
                         or (soc and not android_version and release.soc == soc) \
-                        or (not soc and android_version and release.android_version == android_versino):
+                        or (not soc and android_version and release.android_version == android_version):
                     filtered_releases.append(release)
             else:
                 filtered_releases = self.releases
