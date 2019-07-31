@@ -39,6 +39,8 @@ class CodeauroraReleaseParser:
     def __init__(self, user_config={}):
         self.config = default_config
         self.config.update(user_config)
+        if self.config.get('update-on-init'):
+            self.get_releases()
 
     @property
     def releases(self):
@@ -131,6 +133,7 @@ if __name__ == '__main__':
     args_parser.add_argument("-n", "--number", help="show last [number] releases", type=int)
     args = args_parser.parse_args()
 
+    # caf_parser = CodeauroraReleaseParser({'update-on-init': False})
     caf_parser = CodeauroraReleaseParser()
     caf_parser.get_releases()
     #    caf_parser.print_releases(args.soc, args.android_version, args.number)
