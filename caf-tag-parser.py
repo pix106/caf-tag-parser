@@ -101,7 +101,7 @@ class CodeauroraReleaseParser:
             display_releases = releases[:number]
         else:
             display_releases = releases
-        for release in releases:
+        for release in display_releases:
             print(release)
 
     def get_releases_from_file(self):
