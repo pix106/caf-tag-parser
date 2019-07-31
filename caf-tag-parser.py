@@ -37,7 +37,6 @@ class CodeauroraReleaseParser:
     __releases = []
 
     def __init__(self, user_config={}):
-        # use optional user_config to override default_config
         self.config = default_config
         self.config.update(user_config)
 
@@ -65,7 +64,6 @@ class CodeauroraReleaseParser:
     def get_releases(self):
         request = urllib.request.Request(self.config.get('url'))
         request.add_header("User-Agent", self.config.get('user_agent'))
-        # noinspection PyBroadException
         try:
             response = urllib.request.urlopen(request)
         except:
@@ -94,6 +92,7 @@ class CodeauroraReleaseParser:
             display_releases = releases[:number]
         else:
             display_releases = releases
+
         for release in display_releases:
             print(release)
 
