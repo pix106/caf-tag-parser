@@ -6,37 +6,39 @@ import json
 
 from settings import default_config, releases_file_name
 
-class caf_release:
+
+class CafRelease:
 
     def __init__(self, date, tag, soc, manifest, android_version):
-       self.date = date
-       self.tag = tag
-       self.soc = soc
-       self.manifest = manifest
-       self.android_version = android_version
+        self.date = date
+        self.tag = tag
+        self.soc = soc
+        self.manifest = manifest
+        self.android_version = android_version
 
     def as_dict(self):
-       return {'tag': self.tag,
-               'date': self.date,
-               'soc': self.soc,
-               'manifest': self.manifest,
-               'android_version': self.android_version,
-              }
+        return {'tag': self.tag,
+                'date': self.date,
+                'soc': self.soc,
+                'manifest': self.manifest,
+                'android_version': self.android_version,
+                }
 
     def as_dict_minimal(self):
-       return {'tag': self.tag,
-               'date': self.date,
-              } 
+        return {'tag': self.tag,
+                'date': self.date,
+                }
 
     def as_section(self):
         lines = []
         release_dict = self.as_dict()
         for key in release_dict.keys():
-            lines.append("%s : %s" % (key, release_dict.get(key,"")))
+            lines.append("%s : %s" % (key, release_dict.get(key, "")))
         return "%s%s%s" % ("\n", "\n".join(lines), "\n")
 
     def __str__(self):
         return self.as_section()
+
 
 class CodeauroraReleaseParser:
     __releases = []
@@ -65,7 +67,7 @@ class CodeauroraReleaseParser:
             if android_version == "09.01.00":
                 android_version = "09.00.00"
 
-            self.__releases.append(caf_release(date, tag, soc, manifest, android_version))
+            self.__releases.append(CafRelease(date, tag, soc, manifest, android_version))
 
     def get_releases(self):
         request = urllib.request.Request(self.config.get('url'))
@@ -85,8 +87,8 @@ class CodeauroraReleaseParser:
         for release in self.releases:
             if soc or android_version:
                 if (soc and android_version and release.soc == soc and release.android_version == android_version) \
-                or (soc and not android_version and release.soc == soc) \
-                or (not soc and android_version and release.android_version == android_versino):
+                        or (soc and not android_version and release.soc == soc) \
+                        or (not soc and android_version and release.android_version == android_versino):
                     filtered_releases.append(release)
             else:
                 filtered_releases = self.releases
@@ -126,19 +128,18 @@ class CodeauroraReleaseParser:
 
         # update releases file
         releases_file = self.get_releases_from_file()
-        releases_file.update(latest_releases) 
+        releases_file.update(latest_releases)
         self.write_releases_to_file(releases_file)
 
 
 if __name__ == '__main__':
     args_parser = argparse.ArgumentParser()
     args_parser.add_argument("-s", "--soc", help="soc to filter", type=str)
-    args_parser.add_argument("-a" , "--android_version", help="android version to filter", type=str)
+    args_parser.add_argument("-a", "--android_version", help="android version to filter", type=str)
     args_parser.add_argument("-n", "--number", help="show last [number] releases", type=int)
     args = args_parser.parse_args()
 
     caf_parser = CodeauroraReleaseParser()
     caf_parser.get_releases()
-#    caf_parser.print_releases(args.soc, args.android_version, args.number)
+    #    caf_parser.print_releases(args.soc, args.android_version, args.number)
     caf_parser.update_releases_file(args.soc, args.android_version)
-
