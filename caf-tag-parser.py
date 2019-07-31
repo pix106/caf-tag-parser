@@ -51,7 +51,7 @@ class CodeauroraReleaseParser:
         return self.__releases
 
     def __parse_content(self, html):
-        soup = BeautifulSoup(html, features=self.config.get('parser'))
+        soup = BeautifulSoup(html, features='html.parser')
         table = soup.find("table")
         for row in table.findAll('tr')[1:]:
             col = row.findAll('td')
