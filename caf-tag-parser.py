@@ -59,6 +59,8 @@ class CodeauroraReleaseParser:
             self.__releases.append(CafRelease(date, tag, soc, manifest, android_version))
 
     def get_releases(self):
+        print("=== Updating CAF releases...")
+
         request = urllib.request.Request(self.config.get('url'))
         request.add_header("User-Agent", self.config.get('user_agent'))
         try:
@@ -70,7 +72,9 @@ class CodeauroraReleaseParser:
         html_content = response.read().decode("utf8")
         self.__parse_content(html_content)
 
-    def filter_releases(self, soc=None, android_version=None):
+    def filter_releases(self, soc="", android_version=""):
+        print("=== Applying filter : soc=%s android_version=%s" % (soc, android_version))
+
         filtered_releases = []
         for release in self.releases:
             if soc or android_version:
@@ -92,6 +96,7 @@ class CodeauroraReleaseParser:
 
         for release in display_releases:
             print(release)
+            print("---------------------------------------")
 
     @staticmethod
     def get_releases_from_file():
