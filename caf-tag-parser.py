@@ -129,7 +129,7 @@ class CodeauroraReleaseParser:
 
     @staticmethod
     def print_releases_file():
-        print(json.dumps(CodeauroraReleaseParser.get_releases_from_file()))
+        print(json.dumps(CodeauroraReleaseParser.get_releases_from_file(), indent=4))
 
     @staticmethod
     def write_releases_to_file(releases):
