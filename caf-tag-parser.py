@@ -110,12 +110,15 @@ class CodeauroraReleaseParser:
 
     @staticmethod
     def get_releases_from_file():
+        releases = {}
         try:
-            with open(releases_file_name, 'r') as json_file:
-                releases = json.load(json_file)
-        except:
-            print("Error opening %s" % releases_file_name)
-            releases = {}
+            with open(config['releases_file_name'], 'r') as json_file:
+                try:
+                    releases = json.load(json_file)
+                except ValueError:
+                    print("Empty or invalid file")
+        except FileNotFoundError:
+            print("Error opening %s" % config['releases_file_name'])
         return releases
 
     @staticmethod
