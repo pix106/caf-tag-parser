@@ -138,6 +138,5 @@ if __name__ == '__main__':
 
     # caf_parser = CodeauroraReleaseParser({'update-on-init': False})
     caf_parser = CodeauroraReleaseParser()
-    caf_parser.get_releases()
-    #    caf_parser.print_releases(args.soc, args.android_version, args.number)
+    # caf_parser.print_releases(args.soc, args.android_version, args.number)
     caf_parser.update_releases_file(args.soc, args.android_version)
