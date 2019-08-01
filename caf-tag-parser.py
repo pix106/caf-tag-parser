@@ -113,19 +113,19 @@ class CodeauroraReleaseParser:
             json.dump(releases, json_file, indent=4, sort_keys=True)
 
     def update_releases_file(self, soc, android_version):
+        print("=== Updating latest releases in %s" % releases_file_name)
+
+        file_releases = self.get_releases_from_file()
         latest_releases = {}
         for release in self.filter_releases(soc, android_version):
-            if release.soc in latest_releases:
-                if not release.android_version in latest_releases[release.soc]:
-                    latest_releases[release.soc][release.android_version] = release.as_dict_minimal()
-            else:
+            if not release.soc in latest_releases:
                 latest_releases[release.soc] = {}
-                latest_releases[release.soc][release.android_version] = release.as_dict_minimal()
+            if not release.android_version in latest_releases[release.soc]:
+                latest_releases[release.soc][release.android_version] = release.tag
 
-        # update releases file
-        releases_file = self.get_releases_from_file()
-        releases_file.update(latest_releases)
-        self.write_releases_to_file(releases_file)
+            file_releases[release.soc].update(latest_releases[release.soc])
+
+        self.write_releases_to_file(file_releases)
 
 
 if __name__ == '__main__':
