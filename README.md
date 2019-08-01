@@ -4,7 +4,10 @@ Parse Qualcomm wiki page for android release tags and manifests.
 Can update a json file for every soc and android_version
 
 ## Configuration
-see settings.py
+In settings.py :
+* url
+* releases_file_name
+* user_agent
 
 ## Examples :
 
