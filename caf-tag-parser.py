@@ -20,8 +20,8 @@ class CafRelease:
         return {'tag': self.tag,
                 'date': self.date,
                 'soc': self.soc,
-                'manifest': self.manifest,
                 'android_version': self.android_version,
+                'manifest': self.manifest,
                 }
 
     def __str__(self):
