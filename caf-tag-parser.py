@@ -88,7 +88,7 @@ class CodeauroraReleaseParser:
         return filtered_releases
 
     def print_releases(self, soc, android_version, number=None):
-        releases = caf_parser.filter_releases(soc, android_version)
+        releases = self.filter_releases(soc, android_version)
         if number:
             display_releases = releases[:number]
         else:
