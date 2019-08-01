@@ -97,6 +97,18 @@ class CodeauroraReleaseParser:
             print(release)
             print("---------------------------------------")
 
+    def get_latest_releases(self, soc, android_version):
+        latest_releases = {}
+        filtered_releases = self.filter_releases(soc, android_version)
+
+        for release in filtered_releases:
+            if release.soc not in latest_releases:
+                latest_releases[release.soc] = {}
+            if release.android_version not in latest_releases[release.soc]:
+                latest_releases[release.soc][release.android_version] = release.tag
+
+        return latest_releases
+
     @staticmethod
     def get_releases_from_file():
         releases = {}
@@ -123,20 +135,9 @@ class CodeauroraReleaseParser:
         print("=== Updating latest releases in %s" % config['releases_file_name'])
 
         file_releases = self.get_releases_from_file()
-        latest_releases = {}
-        filtered_releases = self.filter_releases(soc, android_version)
 
-        print("=== Updating latest releases in %s" % releases_file_name)
-
-        # get latest release for each android version
-        for release in filtered_releases:
-            if release.soc not in latest_releases:
-                latest_releases[release.soc] = {}
-            if release.android_version not in latest_releases[release.soc]:
-                latest_releases[release.soc][release.android_version] = release.tag
-
-        # update file
-        for soc, android_versions in latest_releases.items():
+        # update file with latest releases
+        for soc, android_versions in self.get_latest_releases(soc, android_version).items():
             if soc not in file_releases:
                 print("Adding %s" % soc)
                 file_releases[soc] = {}
