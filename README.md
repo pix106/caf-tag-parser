@@ -9,8 +9,8 @@ see settings.py
 ## Examples :
 
 * Update tags file with latest android 9.0 release for sdm660_64
-  __python caf-tag-parser.py -s sdm660_64 -a 09.00.00 -u__
+  * _python caf-tag-parser.py -s sdm660_64 -a 09.00.00 -u_
 * Print tags file
-  __python caf-tag-parser.py -f__
+  * _python caf-tag-parser.py -f_
 * Print 4 last android 9.0 releases for sdm660_64
-  __python caf-tag-parser.py -s sdm660_64 -a 09.00.00 -n4 -p__
+  * _python caf-tag-parser.py -s sdm660_64 -a 09.00.00 -n4 -p_
