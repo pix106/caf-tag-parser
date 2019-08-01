@@ -1,7 +1,4 @@
-config = {'user_agent': ("Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US) "
-                         "AppleWebKit/525.13 (KHTML,     like Gecko)"
-                         "Chrome/0.2.149.29 Safari/525.13"),
+config = {'user_agent': ("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36"),
           'url': 'https://www.codeaurora.org/xwiki/bin/QAEP/release',
           'releases_file_name': 'latest_tags.json',
           }
-
