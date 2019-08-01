@@ -32,7 +32,6 @@ class CodeauroraReleaseParser:
     __releases = []
 
     def __init__(self, args):
-        self.config = config
 
         if args.print_file:
             self.print_releases_file()
@@ -71,8 +70,8 @@ class CodeauroraReleaseParser:
     def get_releases(self):
         print("=== Updating CAF releases...")
 
-        request = urllib.request.Request(self.config.get('url'))
-        request.add_header("User-Agent", self.config.get('user_agent'))
+        request = urllib.request.Request(config.get('url'))
+        request.add_header("User-Agent", config.get('user_agent'))
         try:
             response = urllib.request.urlopen(request)
         except:
