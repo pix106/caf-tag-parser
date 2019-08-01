@@ -104,6 +104,7 @@ class CodeauroraReleaseParser:
             with open(releases_file_name, 'r') as json_file:
                 releases = json.load(json_file)
         except:
+            print("Error opening %s" % releases_file_name)
             releases = {}
         return releases
 
