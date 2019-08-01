@@ -2,7 +2,7 @@
 
 Parse Qualcomm wiki page for android release tags and manifests.
 
-Can update a json file for every soc and android_version
+Can update a json file for every searched soc and android_version tags
 
 
 ## Configuration
