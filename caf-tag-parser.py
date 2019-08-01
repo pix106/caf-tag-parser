@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 import argparse
 import json
 
-from settings import default_config, releases_file_name
+from settings import config
 
 
 class CafRelease:
@@ -31,11 +31,21 @@ class CafRelease:
 class CodeauroraReleaseParser:
     __releases = []
 
-    def __init__(self, user_config={}):
-        self.config = default_config
-        self.config.update(user_config)
-        if self.config.get('update-on-init'):
-            self.get_releases()
+    def __init__(self, args):
+        self.config = config
+
+        if args.print_file:
+            self.print_releases_file()
+            exit()
+
+        # get releases
+        self.get_releases()
+
+        if args.print_releases:
+            self.print_releases(args.soc, args.android_version, args.number)
+
+        if args.update_file:
+            self.update_releases_file(args.soc, args.android_version)
 
     @property
     def releases(self):
@@ -109,8 +119,12 @@ class CodeauroraReleaseParser:
         return releases
 
     @staticmethod
+    def print_releases_file():
+        print(json.dumps(CodeauroraReleaseParser.get_releases_from_file()))
+
+    @staticmethod
     def write_releases_to_file(releases):
-        with open(releases_file_name, 'w') as json_file:
+        with open(config['releases_file_name'], 'w') as json_file:
             json.dump(releases, json_file, indent=4, sort_keys=True)
 
     def update_releases_file(self, soc, android_version):
@@ -145,12 +159,12 @@ class CodeauroraReleaseParser:
 
 if __name__ == '__main__':
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument("-s", "--soc", help="soc to filter", type=str)
-    args_parser.add_argument("-a", "--android_version", help="android version to filter", type=str)
+    args_parser.add_argument("soc", help="soc to filter", type=str)
+    args_parser.add_argument("android_version", help="android version to filter", type=str)
     args_parser.add_argument("-n", "--number", help="show last [number] releases", type=int)
-    args = args_parser.parse_args()
+    args_parser.add_argument("-p", "--print_releases", help="prints online tags releases", action="store_true")
+    args_parser.add_argument("-f", "--print_file", help="prints tags file", action="store_true")
+    args_parser.add_argument("-u", "--update_file", help="update tags file", action="store_true")
+    cli_args = args_parser.parse_args()
 
-    # caf_parser = CodeauroraReleaseParser({'update-on-init': False})
-    caf_parser = CodeauroraReleaseParser()
-    # caf_parser.print_releases(args.soc, args.android_version, args.number)
-    caf_parser.update_releases_file(args.soc, args.android_version)
+    caf_parser = CodeauroraReleaseParser(cli_args)
