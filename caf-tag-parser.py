@@ -93,7 +93,8 @@ class CodeauroraReleaseParser:
         for release in display_releases:
             print(release)
 
-    def get_releases_from_file(self):
+    @staticmethod
+    def get_releases_from_file():
         try:
             with open(releases_file_name, 'r') as json_file:
                 releases = json.load(json_file)
@@ -101,7 +102,8 @@ class CodeauroraReleaseParser:
             releases = {}
         return releases
 
-    def write_releases_to_file(self, releases):
+    @staticmethod
+    def write_releases_to_file(releases):
         with open(releases_file_name, 'w') as json_file:
             json.dump(releases, json_file, indent=4, sort_keys=True)
 
