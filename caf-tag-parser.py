@@ -92,10 +92,12 @@ class CodeauroraReleaseParser:
     def print_releases(self, soc, android_version, number=None):
         releases = self.filter_releases(soc, android_version)
         if number:
+            print("=== Last %s releases" % number)
             display_releases = releases[:number]
         else:
             display_releases = releases
 
+        print("---------------------------------------")
         for release in display_releases:
             print(release)
             print("---------------------------------------")
