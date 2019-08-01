@@ -37,7 +37,7 @@ class CodeauroraReleaseParser:
             self.print_releases_file()
             exit()
 
-        if not ( args.soc and args.android_version):
+        if not (args.soc and args.android_version):
             print("Missing soc and/or android_version")
             exit()
 
