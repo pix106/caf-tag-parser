@@ -82,20 +82,9 @@ class CodeauroraReleaseParser:
         html_content = response.read().decode("utf8")
         self.__parse_content(html_content)
 
-    def filter_releases(self, soc="", android_version=""):
-        print("=== Applying filter : soc=%s android_version=%s" % (soc, android_version))
-
-        filtered_releases = []
-        for release in self.releases:
-            if soc or android_version:
-                if (soc and android_version and release.soc == soc and release.android_version == android_version) \
-                        or (soc and not android_version and release.soc == soc) \
-                        or (not soc and android_version and release.android_version == android_version):
-                    filtered_releases.append(release)
-            else:
-                filtered_releases = self.releases
-
-        return filtered_releases
+    def filter_releases(self, soc, android_version):
+        print("=== Filtering : soc=%s android_version=%s" % (soc, android_version))
+        return [release for release in self.releases if release.soc == soc and release.android_version == android_version]
 
     def print_releases(self, soc, android_version, number=None):
         releases = self.filter_releases(soc, android_version)
