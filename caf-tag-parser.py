@@ -121,15 +121,15 @@ class CodeauroraReleaseParser:
         print("=== Updating latest releases in %s" % releases_file_name)
 
         for release in filtered_releases:
-            if not release.soc in latest_releases:
+            if release.soc not in latest_releases:
                 latest_releases[release.soc] = {}
-            if not release.android_version in latest_releases[release.soc]:
+            if release.android_version not in latest_releases[release.soc]:
                 latest_releases[release.soc][release.android_version] = release.tag
 
-            if not release.soc in file_releases:
+            if release.soc not in file_releases:
                 print("Adding %s" % release.soc)
                 file_releases[release.soc] = {}
-            if not release.android_version in file_releases[release.soc]:
+            if release.android_version not in file_releases[release.soc]:
                 print("Adding %s : %s" % (release.soc, release.android_version))
                 file_releases[release.soc].update(latest_releases[release.soc])
 
