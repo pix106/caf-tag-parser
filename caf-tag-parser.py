@@ -24,11 +24,6 @@ class CafRelease:
                 'android_version': self.android_version,
                 }
 
-    def as_dict_minimal(self):
-        return {'tag': self.tag,
-                'date': self.date,
-                }
-
     def __str__(self):
         return "\n".join(["%s %s" % (key, value) for key, value in self.as_dict().items()])
 
