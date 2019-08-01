@@ -37,6 +37,10 @@ class CodeauroraReleaseParser:
             self.print_releases_file()
             exit()
 
+        if not ( args.soc and args.android_version):
+            print("Missing soc and/or android_version")
+            exit()
+
         # get releases
         self.get_releases()
 
@@ -154,8 +158,8 @@ class CodeauroraReleaseParser:
 
 if __name__ == '__main__':
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument("soc", help="soc to filter", type=str)
-    args_parser.add_argument("android_version", help="android version to filter", type=str)
+    args_parser.add_argument("-s", "--soc", help="soc to filter", type=str)
+    args_parser.add_argument("-a", "--android_version", help="android version to filter", type=str)
     args_parser.add_argument("-n", "--number", help="show last [number] releases", type=int)
     args_parser.add_argument("-p", "--print_releases", help="prints online tags releases", action="store_true")
     args_parser.add_argument("-f", "--print_file", help="prints tags file", action="store_true")
