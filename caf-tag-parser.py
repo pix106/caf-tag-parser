@@ -131,12 +131,13 @@ class CodeauroraReleaseParser:
             json.dump(releases, json_file, indent=4, sort_keys=True)
 
     def update_releases_file(self, soc, android_version):
+        file_releases = self.get_releases_from_file()
+        latest_releases = self.get_latest_releases(soc, android_version)
+
         print("=== Updating latest releases in %s" % config['releases_file_name'])
 
-        file_releases = self.get_releases_from_file()
-
         # update file with latest releases
-        for soc, android_versions in self.get_latest_releases(soc, android_version).items():
+        for soc, android_versions in latest_releases.items():
             if soc not in file_releases:
                 print("Adding %s" % soc)
                 file_releases[soc] = {}
