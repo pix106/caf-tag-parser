@@ -127,8 +127,9 @@ class CodeauroraReleaseParser:
             if not release.soc in file_releases:
                 print("Adding %s" % release.soc)
                 file_releases[release.soc] = {}
-            print("Adding %s : %s" %(release.soc, release.android_version))
-            file_releases[release.soc].update(latest_releases[release.soc])
+            if not release.android_version in file_releases[release.soc]:
+                print("Adding %s : %s" % (release.soc, release.android_version))
+                file_releases[release.soc].update(latest_releases[release.soc])
 
         self.write_releases_to_file(file_releases)
 
