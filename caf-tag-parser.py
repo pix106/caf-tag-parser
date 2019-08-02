@@ -49,6 +49,7 @@ class CodeauroraReleaseParser:
 
         if args.update_file:
             self.update_releases_file(args.soc, args.android_version)
+            self.print_releases_file()
 
     @property
     def releases(self):
