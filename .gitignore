@@ -1,2 +1,4 @@
 *.pyc
 latest_tags.json
+.idea/*
+venv/*
