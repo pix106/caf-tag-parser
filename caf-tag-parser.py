@@ -104,14 +104,16 @@ class CodeauroraReleaseParser:
             print(separator)
 
     def get_latest_releases(self, soc, android_version, number=None):
-        latest_releases = {}
         filtered_releases = self.filter_releases(soc, android_version, number)
+        latest_parsed_releases = {}
+        latest_releases = []
 
         for release in filtered_releases:
-            if release.soc not in latest_releases:
-                latest_releases[release.soc] = {}
-            if release.android_version not in latest_releases[release.soc]:
-                latest_releases[release.soc][release.android_version] = release.tag
+            if release.soc not in latest_parsed_releases:
+                latest_parsed_releases[release.soc] = {}
+            if release.android_version not in latest_parsed_releases[release.soc]:
+                latest_parsed_releases[release.soc][release.android_version] = release.tag
+                latest_releases.append(release)
 
         return latest_releases
 
@@ -144,16 +146,16 @@ class CodeauroraReleaseParser:
         print("=== Updating latest releases in %s" % config['releases_file_name'])
 
         # update file with latest releases
-        for soc, android_versions in latest_releases.items():
-            if soc not in file_releases:
+
+        for release in latest_releases:
+            if release.soc not in file_releases:
                 print("Adding %s" % soc)
-                file_releases[soc] = {}
-            for android_version, tag in android_versions.items():
-                if android_version not in file_releases[soc]:
-                    file_releases[soc][android_version] = ""
-                if tag != file_releases[soc][android_version]:
-                    print("Updating %s : %s" % (soc, android_version))
-                    file_releases[soc][android_version] = tag
+                file_releases[release.soc] = {}
+            if release.android_version not in file_releases[release.soc]:
+                file_releases[soc][android_version] = ""
+            if release.tag != file_releases[release.soc][release.android_version]:
+                print("Updating %s : %s" % (soc, android_version))
+                file_releases[soc][android_version] = release.tag
 
         # write file
         self.write_releases_to_file(file_releases)
