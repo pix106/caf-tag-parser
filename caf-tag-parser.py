@@ -86,26 +86,25 @@ class CodeauroraReleaseParser:
         html_content = response.read().decode("utf8")
         self.__parse_content(html_content)
 
-    def filter_releases(self, soc, android_version):
+    def filter_releases(self, soc, android_version, number=None):
         print("=== Filtering : soc=%s android_version=%s" % (soc, android_version))
-        return [release for release in self.releases if release.soc == soc and release.android_version == android_version]
+        filtered_releases = [release for release in self.releases if release.soc == soc and release.android_version == android_version]
+        if number:
+            print("=== Keeping %s last releases" % number)
+            filtered_releases = filtered_releases[:number]
+        return filtered_releases
 
     def print_releases(self, soc, android_version, number=None):
-        releases = self.filter_releases(soc, android_version)
-        if number:
-            print("=== Last %s releases" % number)
-            display_releases = releases[:number]
-        else:
-            display_releases = releases
+        releases = self.filter_releases(soc, android_version, number)
 
         print("---------------------------------------")
         for release in display_releases:
             print(release)
             print("---------------------------------------")
 
-    def get_latest_releases(self, soc, android_version):
+    def get_latest_releases(self, soc, android_version, number=None):
         latest_releases = {}
-        filtered_releases = self.filter_releases(soc, android_version)
+        filtered_releases = self.filter_releases(soc, android_version, number)
 
         for release in filtered_releases:
             if release.soc not in latest_releases:
