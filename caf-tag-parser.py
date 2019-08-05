@@ -97,10 +97,11 @@ class CodeauroraReleaseParser:
     def print_releases(self, soc, android_version, number=None):
         releases = self.filter_releases(soc, android_version, number)
 
-        print("---------------------------------------")
-        for release in display_releases:
+        separator = "---------------------------------------"
+        print(separator)
+        for release in releases:
             print(release)
-            print("---------------------------------------")
+            print(separator)
 
     def get_latest_releases(self, soc, android_version, number=None):
         latest_releases = {}
