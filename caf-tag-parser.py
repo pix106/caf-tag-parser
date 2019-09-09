@@ -16,6 +16,9 @@ class CafRelease:
         self.manifest = manifest
         self.android_version = android_version
 
+    def version(self):
+        return int(self.tag.split("-")[1])
+
     def as_dict(self):
         return {'tag': self.tag,
                 'date': self.date,
