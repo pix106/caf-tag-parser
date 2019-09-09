@@ -32,33 +32,15 @@ class CafRelease:
 
 
 class CodeauroraReleaseParser:
-    __releases = []
 
-    def __init__(self, args):
+    def __init__(self):
 
-        if args.print_file:
-            self.print_releases_file()
-            exit()
+        self.url = config.get('url')
+        self.user_agent = config.get('user_agent')
+        self.releases = self.get_releases()
 
-        if not (args.soc and args.android_version):
-            print("Missing soc and/or android_version")
-            exit()
-
-        # get releases
-        self.get_releases()
-
-        if args.print_releases:
-            self.print_releases(args.soc, args.android_version, args.number)
-
-        if args.update_file:
-            self.update_releases_file(args.soc, args.android_version)
-            self.print_releases_file()
-
-    @property
-    def releases(self):
-        return self.__releases
-
-    def __parse_content(self, html):
+    def parse_content(self, html):
+        releases = []
         soup = BeautifulSoup(html, features='html.parser')
         table = soup.find("table")
         for row in table.findAll('tr')[1:]:
@@ -73,13 +55,13 @@ class CodeauroraReleaseParser:
             if android_version == "09.01.00":
                 android_version = "09.00.00"
 
-            self.__releases.append(CafRelease(date, tag, soc, manifest, android_version))
+            releases.append(CafRelease(date, tag, soc, manifest, android_version))
+        return releases
 
     def get_releases(self):
-        print("=== Updating CAF releases...")
-
-        request = urllib.request.Request(config.get('url'))
-        request.add_header("User-Agent", config.get('user_agent'))
+        print("=== Getting online CAF releases from %s ..." % self.url)
+        request = urllib.request.Request(self.url)
+        request.add_header("User-Agent", self.user_agent)
         try:
             response = urllib.request.urlopen(request)
         except:
@@ -87,21 +69,33 @@ class CodeauroraReleaseParser:
             print("Error: Invalid URL. Exiting.")
             exit()
         html_content = response.read().decode("utf8")
-        self.__parse_content(html_content)
+        return self.parse_content(html_content)
 
-    def filter_releases(self, soc, android_version, number=None):
-        print("=== Filtering : soc=%s android_version=%s" % (soc, android_version))
-        filtered_releases = [release for release in self.releases if release.soc == soc and release.android_version == android_version]
-        if number:
-            print("=== Keeping %s last releases" % number)
+    def filter_releases(self, soc=None, android_version=None, number=None):
+        if soc and android_version:
+            filtered_releases = [release for release in self.releases
+                                 if release.soc == soc and release.android_version == android_version]
+        elif soc or android_version:
+            if soc:
+                filtered_releases = [release for release in self.releases
+                                     if release.soc == soc]
+
+            elif android_version:
+                filtered_releases = [release for release in self.releases
+                                     if release.sandroid_versionoc == android_version]
+        else:
+            filtered_releases = self.releases
+
+        if filtered_releases and number:
             filtered_releases = filtered_releases[:number]
         return filtered_releases
 
-    def print_releases(self, soc, android_version, number=None):
+    def print_releases(self, soc=None, android_version=None, number=None):
         releases = self.filter_releases(soc, android_version, number)
+        releases.reverse()
 
+        print("== Found %d releases" % len(releases))
         separator = "---------------------------------------"
-        print(separator)
         for release in releases:
             print(release)
             print(separator)
@@ -110,68 +104,127 @@ class CodeauroraReleaseParser:
         filtered_releases = self.filter_releases(soc, android_version, number)
         latest_parsed_releases = {}
         latest_releases = []
-
         for release in filtered_releases:
             if release.soc not in latest_parsed_releases:
                 latest_parsed_releases[release.soc] = {}
             if release.android_version not in latest_parsed_releases[release.soc]:
                 latest_parsed_releases[release.soc][release.android_version] = release.tag
                 latest_releases.append(release)
-
         return latest_releases
 
-    @staticmethod
-    def get_releases_from_file():
+    def get_latest_release(self, soc, android_version):
+        latest_releases = self.get_latest_releases(soc, android_version, 1)
+        if latest_releases:
+            latest_release = latest_releases[0]
+        else:
+            latest_release = None
+        return latest_release
+
+
+class CafReleasesFile:
+
+    def __init__(self, args):
+        self.releases_file = config['releases_file_name']
+
+    def get_tags(self):
         releases = {}
         try:
-            with open(config['releases_file_name'], 'r') as json_file:
+            with open(self.releases_file, 'r') as json_file:
                 try:
                     releases = json.load(json_file)
                 except ValueError:
                     print("Empty or invalid file")
         except FileNotFoundError:
-            print("Error opening %s" % config['releases_file_name'])
+            print("Error opening %s" % self.releases_file)
         return releases
 
-    @staticmethod
-    def print_releases_file():
-        print(json.dumps(CodeauroraReleaseParser.get_releases_from_file(), indent=4))
+    def get_tag(self, soc, android_version):
+        file_tags = self.get_tags()
+        try:
+            file_tag = file_tags[soc][android_version]
+        except:
+            file_tag = None
+        return file_tag
 
-    @staticmethod
-    def write_releases_to_file(releases):
-        with open(config['releases_file_name'], 'w') as json_file:
+    def get_version(self, soc, android_version):
+        file_tag = self.get_tag(soc, android_version)
+        if file_tag:
+            file_version = int(file_tag.split("-")[1])
+        else:
+            file_version = 0
+        return file_version
+
+    def write_releases(self, releases):
+        with open(self.releases_file, 'w') as json_file:
             json.dump(releases, json_file, indent=4, sort_keys=True)
 
-    def update_releases_file(self, soc, android_version):
-        file_releases = self.get_releases_from_file()
-        latest_releases = self.get_latest_releases(soc, android_version)
+    def write_tag(self, soc, android_version, tag):
+        file_releases = self.get_tags()
+        if soc not in file_releases:
+            file_releases[soc] = {}
+        file_releases[soc][android_version] = tag
+        self.write_releases(file_releases)
 
-        print("=== Updating latest releases in %s" % config['releases_file_name'])
+    def print_releases(self):
+        print(json.dumps(self.get_tags(), indent=4))
 
-        # update file with latest releases
+    def update_tag(self, parser, soc, android_version):
+        print("=== Updating file %s : soc %s android %s" % (self.releases_file, soc, android_version))
 
+        latest_release = parser.get_latest_release(soc, android_version)
+        file_current_version = self.get_version(soc, android_version)
+
+        if latest_release.version() > file_current_version:
+            print("Updating : %s" % latest_release.tag)
+            self.write_tag(soc, android_version, latest_release.tag)
+        else:
+            print("Already up to date : %s" % latest_release.tag)
+
+    def update_tags(self, parser, soc=None, android_version=None):
+        latest_releases = parser.get_latest_releases(soc, android_version)
         for release in latest_releases:
-            if release.soc not in file_releases:
-                print("Adding %s" % soc)
-                file_releases[release.soc] = {}
-            if release.android_version not in file_releases[release.soc]:
-                file_releases[soc][android_version] = ""
-            if release.tag != file_releases[release.soc][release.android_version]:
-                print("Updating %s : %s" % (soc, android_version))
-                file_releases[soc][android_version] = release.tag
+            self.update_tag(parser, release.soc, release.android_version)
 
-        # write file
-        self.write_releases_to_file(file_releases)
+    def update_file_tags(self, parser):
+        tags = self.get_tags()
+        for soc in tags.keys():
+            for android_version in tags[soc].keys():
+                self.update_tag(parser, soc, android_version)
 
 
 if __name__ == '__main__':
     args_parser = argparse.ArgumentParser()
-    args_parser.add_argument("-s", "--soc", help="soc to filter", type=str)
-    args_parser.add_argument("-a", "--android_version", help="android version to filter", type=str)
+    args_parser.add_argument("-s", "--soc", help="soc to filter", type=str, default=None)
+    args_parser.add_argument("-a", "--android_version", help="android version to filter", type=str, default=None)
     args_parser.add_argument("-n", "--number", help="show last [number] releases", type=int)
     args_parser.add_argument("-p", "--print_releases", help="prints online tags releases", action="store_true")
     args_parser.add_argument("-f", "--print_file", help="prints tags file", action="store_true")
-    args_parser.add_argument("-u", "--update_file", help="update tags file", action="store_true")
-    cli_args = args_parser.parse_args()
+    args_parser.add_argument("-t", "--update_tag", help="update tag file for one soc and android_version", action="store_true")
+    args_parser.add_argument("-x", "--update_tags", help="update tags file", action="store_true")
+    args_parser.add_argument("-u", "--update_file_tags", help="update tags file", action="store_true")
+    args = args_parser.parse_args()
 
-    caf_parser = CodeauroraReleaseParser(cli_args)
+    # file
+    caf_file = CafReleasesFile(args)
+    if args.print_file:
+        caf_file.print_releases()
+        exit
+
+    # elif
+    #
+    #
+
+    # from now on, we need a CodeauroraReleaseParser instance
+    else:
+        caf_parser = CodeauroraReleaseParser()
+        if args.print_releases:
+            caf_parser.print_releases(args.soc, args.android_version, args.number)
+
+        if args.update_tag:
+            caf_file.update_tag(caf_parser, args.soc, args.android_version)
+
+        if args.update_file_tags:
+            caf_file.update_file_tags(caf_parser)
+
+        if args.update_tags:
+            caf_file.update_tags(caf_parser, args.soc, args.android_version)
