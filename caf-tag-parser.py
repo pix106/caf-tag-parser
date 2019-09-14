@@ -40,6 +40,7 @@ class CodeauroraReleaseParser:
         self.releases = self.get_releases()
 
     def parse_content(self, html):
+        print("=== Parsing CAF releases")
         releases = []
         soup = BeautifulSoup(html, features='html.parser')
         table = soup.find("table")
@@ -59,7 +60,7 @@ class CodeauroraReleaseParser:
         return releases
 
     def get_releases(self):
-        print("=== Getting online CAF releases from %s ..." % self.url)
+        print("=== Downloading CAF releases from %s ..." % self.url)
         request = urllib.request.Request(self.url)
         request.add_header("User-Agent", self.user_agent)
         try:
@@ -176,6 +177,7 @@ class CafReleasesFile:
 
         if latest_release.version() > file_current_version:
             print("Updating : %s" % latest_release.tag)
+            print(latest_release)
             self.write_tag(soc, android_version, latest_release.tag)
         else:
             print("Already up to date : %s" % latest_release.tag)
