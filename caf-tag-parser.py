@@ -136,7 +136,7 @@ class CafReleasesFile:
                 except ValueError:
                     print("Empty or invalid file")
         except FileNotFoundError:
-            print("Error opening %s" % self.releases_file)
+            pass
         return releases
 
     def get_tag(self, soc, android_version):
@@ -156,11 +156,12 @@ class CafReleasesFile:
         return file_version
 
     def write_releases(self, releases):
-        with open(self.releases_file, 'w') as json_file:
+        with open(self.releases_file, 'w+') as json_file:
             json.dump(releases, json_file, indent=4, sort_keys=True)
 
     def write_tag(self, soc, android_version, tag):
         file_releases = self.get_tags()
+
         if soc not in file_releases:
             file_releases[soc] = {}
         file_releases[soc][android_version] = tag
