@@ -209,10 +209,6 @@ if __name__ == '__main__':
         caf_file.print_releases()
         exit
 
-    # elif
-    #
-    #
-
     # from now on, we need a CodeauroraReleaseParser instance
     else:
         caf_parser = CodeauroraReleaseParser()
