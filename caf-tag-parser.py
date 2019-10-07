@@ -171,17 +171,14 @@ class CafReleasesFile:
         print(json.dumps(self.get_tags(), indent=4))
 
     def update_tag(self, parser, soc, android_version):
-        print("=== Updating file %s : soc %s android %s" % (self.releases_file, soc, android_version))
-
         latest_release = parser.get_latest_release(soc, android_version)
+        current_tag = self.get_tag(soc, android_version)
         file_current_version = self.get_version(soc, android_version)
 
+        print("%s - Android %s - %s" % (soc, android_version, latest_release.tag))
         if latest_release.version() > file_current_version:
-            print("Updating : %s" % latest_release.tag)
-            print(latest_release)
+            print("  => UPDATED TAG <= previous : %s" % current_tag)
             self.write_tag(soc, android_version, latest_release.tag)
-        else:
-            print("Already up to date : %s" % latest_release.tag)
 
     def update_tags(self, parser, soc=None, android_version=None):
         latest_releases = parser.get_latest_releases(soc, android_version)
