@@ -199,7 +199,6 @@ if __name__ == '__main__':
     args_parser.add_argument("-n", "--number", help="show last [number] releases", type=int)
     args_parser.add_argument("-p", "--print_releases", help="prints online tags releases", action="store_true")
     args_parser.add_argument("-f", "--print_file", help="prints tags file", action="store_true")
-    args_parser.add_argument("-t", "--update_tag", help="update tag file for one soc and android_version", action="store_true")
     args_parser.add_argument("-x", "--update_tags", help="update tags file", action="store_true")
     args_parser.add_argument("-u", "--update_file_tags", help="update tags file", action="store_true")
     args = args_parser.parse_args()
@@ -219,9 +218,6 @@ if __name__ == '__main__':
         caf_parser = CodeauroraReleaseParser()
         if args.print_releases:
             caf_parser.print_releases(args.soc, args.android_version, args.number)
-
-        if args.update_tag:
-            caf_file.update_tag(caf_parser, args.soc, args.android_version)
 
         if args.update_file_tags:
             caf_file.update_file_tags(caf_parser)
