@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import argparse
 import json
 
+from colorama import Fore, Back, Style
+
 from settings import config
 
 
@@ -175,9 +177,9 @@ class CafReleasesFile:
         current_tag = self.get_tag(soc, android_version)
         file_current_version = self.get_version(soc, android_version)
 
-        print("%s - Android %s - %s" % (soc, android_version, latest_release.tag))
+        print("%s - Android %s - %s" % (soc, android_version, current_tag))
         if latest_release.version() > file_current_version:
-            print("  => UPDATED TAG <= previous : %s" % current_tag)
+            print(Style.BRIGHT + "  => UPDATED TAG : %s" % latest_release.tag + Style.RESET_ALL)
             self.write_tag(soc, android_version, latest_release.tag)
 
     def update_tags(self, parser, soc=None, android_version=None):
