@@ -85,7 +85,7 @@ class CodeauroraReleaseParser:
 
             elif android_version:
                 filtered_releases = [release for release in self.releases
-                                     if release.sandroid_versionoc == android_version]
+                                     if release.android_version == android_version]
         else:
             filtered_releases = self.releases
 
