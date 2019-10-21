@@ -19,7 +19,11 @@ class CafRelease:
         self.android_version = android_version
 
     def version(self):
-        return int(self.tag.split("-")[1])
+        try:
+            version = int(self.tag.split("-")[1])
+        except:
+            version = 0
+        return version
 
     def as_dict(self):
         return {'tag': self.tag,
@@ -151,9 +155,9 @@ class CafReleasesFile:
 
     def get_version(self, soc, android_version):
         file_tag = self.get_tag(soc, android_version)
-        if file_tag:
+        try:
             file_version = int(file_tag.split("-")[1])
-        else:
+        except:
             file_version = 0
         return file_version
 
