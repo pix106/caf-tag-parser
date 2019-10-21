@@ -1,5 +1,7 @@
 import urllib.request
 import urllib.response
+from operator import attrgetter
+
 from bs4 import BeautifulSoup
 import argparse
 import json
@@ -188,6 +190,15 @@ class CafReleasesFile:
 
     def update_tags(self, parser, soc=None, android_version=None):
         latest_releases = parser.get_latest_releases(soc, android_version)
+
+        # sort releases list
+        if soc and not android_version:
+            latest_releases.sort(key=attrgetter('android_version'))
+        elif not soc and android_version:
+            latest_releases.sort(key=attrgetter('soc'))
+        elif soc and android_version:
+            latest_releases.sort(key=attrgetter('soc', 'android_version'))
+
         for release in latest_releases:
             self.update_tag(parser, release.soc, release.android_version)
 
