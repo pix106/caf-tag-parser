@@ -20,13 +20,6 @@ class CafRelease:
         self.manifest = manifest
         self.android_version = android_version
 
-    def version(self):
-        try:
-            version = int(self.tag.split("-")[1])
-        except:
-            version = 0
-        return version
-
     def as_dict(self):
         return {'tag': self.tag,
                 'date': self.date,
@@ -155,14 +148,6 @@ class CafReleasesFile:
             file_tag = None
         return file_tag
 
-    def get_version(self, soc, android_version):
-        file_tag = self.get_tag(soc, android_version)
-        try:
-            file_version = int(file_tag.split("-")[1])
-        except:
-            file_version = 0
-        return file_version
-
     def write_releases(self, releases):
         with open(self.releases_file, 'w+') as json_file:
             json.dump(releases, json_file, indent=4, sort_keys=True)
@@ -181,10 +166,9 @@ class CafReleasesFile:
     def update_tag(self, parser, soc, android_version):
         latest_release = parser.get_latest_release(soc, android_version)
         current_tag = self.get_tag(soc, android_version)
-        file_current_version = self.get_version(soc, android_version)
 
         print("%s - Android %s - %s" % (soc, android_version, current_tag))
-        if latest_release.version() > file_current_version:
+        if latest_release.tag != current_tag:
             print(Style.BRIGHT + "  => UPDATED TAG : %s" % latest_release.tag + Style.RESET_ALL)
             self.write_tag(soc, android_version, latest_release.tag)
 
