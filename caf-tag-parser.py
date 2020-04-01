@@ -18,6 +18,7 @@ class CafRelease:
         self.tag = tag
         self.soc = soc
         self.manifest = manifest
+        self.manifest_url = config['manifest_url'].replace("MANIFEST", manifest).replace("TAG", tag)
         self.android_version = android_version
 
     def as_dict(self):
@@ -26,6 +27,7 @@ class CafRelease:
                 'soc': self.soc,
                 'android_version': self.android_version,
                 'manifest': self.manifest,
+                'manifest_url': self.manifest_url,
                 }
 
     def __str__(self):
