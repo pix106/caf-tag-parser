@@ -1,8 +1,7 @@
-import urllib.request
-import urllib.response
 from operator import attrgetter
+import lxml.html as lh
+import requests
 
-from bs4 import BeautifulSoup
 import argparse
 import json
 
@@ -37,43 +36,31 @@ class CafRelease:
 class CodeauroraReleaseParser:
 
     def __init__(self):
-
         self.url = config.get('url')
         self.user_agent = config.get('user_agent')
         self.releases = self.get_releases()
 
-    def parse_content(self, html):
+    def get_releases(self):
+        print("=== Downloading CAF releases from %s ..." % self.url)
+        html = requests.get(self.url)
         print("=== Parsing CAF releases")
         releases = []
-        soup = BeautifulSoup(html, features='html.parser')
-        table = soup.find("table")
-        for row in table.findAll('tr')[1:]:
-            col = row.findAll('td')
-            date = col[0].get_text(strip=True)
-            tag = col[1].get_text(strip=True)
-            soc = col[2].get_text(strip=True)
-            manifest = col[3].get_text(strip=True)
-            android_version = col[4].get_text(strip=True)
-
+        doc = lh.fromstring(html.content)
+        tr_elements = doc.xpath('//tr')
+        for row in tr_elements[1:]:
+            date = row[0].text_content().strip()
+            tag = row[1].text_content().strip()
+            soc = row[2].text_content().strip()
+            manifest = row[2].text_content().strip()
+            android_version = row[4].text_content().strip()
             # WORKAROUND : bad android version 09.01.00
             if android_version == "09.01.00":
                 android_version = "09.00.00"
 
+            # print("%s - %s : %s (%s)"%(soc, android_version, tag, date))
             releases.append(CafRelease(date, tag, soc, manifest, android_version))
-        return releases
 
-    def get_releases(self):
-        print("=== Downloading CAF releases from %s ..." % self.url)
-        request = urllib.request.Request(self.url)
-        request.add_header("User-Agent", self.user_agent)
-        try:
-            response = urllib.request.urlopen(request)
-        except:
-            response = None
-            print("Error: Invalid URL. Exiting.")
-            exit()
-        html_content = response.read().decode("utf8")
-        return self.parse_content(html_content)
+        return releases
 
     def filter_releases(self, soc=None, android_version=None, number=None):
         if soc and android_version:
@@ -170,9 +157,10 @@ class CafReleasesFile:
         current_tag = self.get_tag(soc, android_version)
 
         print("%s - Android %s - %s" % (soc, android_version, current_tag))
-        if latest_release.tag != current_tag:
-            print(Style.BRIGHT + "  => UPDATED TAG : %s" % latest_release.tag + Style.RESET_ALL)
-            self.write_tag(soc, android_version, latest_release.tag)
+        if latest_release:
+            if latest_release.tag != current_tag:
+                print(Style.BRIGHT + "  => UPDATED TAG : %s" % latest_release.tag + Style.RESET_ALL)
+                self.write_tag(soc, android_version, latest_release.tag)
 
     def update_tags(self, parser, soc=None, android_version=None):
         latest_releases = parser.get_latest_releases(soc, android_version)
