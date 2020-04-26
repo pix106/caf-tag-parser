@@ -37,7 +37,6 @@ class CodeauroraReleaseParser:
 
     def __init__(self):
         self.url = config.get('url')
-        self.user_agent = config.get('user_agent')
         self.releases = self.get_releases()
 
     def get_releases(self):
